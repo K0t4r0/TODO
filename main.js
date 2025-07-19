@@ -23,7 +23,7 @@ if (saved) {
     .catch(error => console.error(error));
 }
 
-function addToDo(data, columnId = "todo") {
+function addToDo(data) {
   const newItem = document.createElement("p");
   newItem.textContent = data.text;
   newItem.draggable = true;
@@ -40,7 +40,7 @@ function addToDo(data, columnId = "todo") {
   });
 
   // Append to the correct column
-  const column = document.getElementById(columnId);
+  const column = document.getElementById(data.status);
   if (column) column.appendChild(newItem);
 }
 
@@ -64,7 +64,7 @@ const updateTodoStatus = (id, status) => {
 }
 
 // Make columns droppable
-["todo", "inProgress", "done"].forEach(id => {
+["todo", "in_progress", "done"].forEach(id => {
   const col = document.getElementById(id);
   if (col) {
     col.addEventListener("dragover", (e) => {
@@ -84,7 +84,7 @@ const updateTodoStatus = (id, status) => {
       if (id === "todo") {
         newItem.classList.add("to_do");
         updateTodoStatus(draggedId, 'todo');
-      } else if (id === "inProgress") {
+      } else if (id === "in_progress") {
         newItem.classList.add("in_progress");
         updateTodoStatus(draggedId, 'in_progress');
       } else if (id === "done") {

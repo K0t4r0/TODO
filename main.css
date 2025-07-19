@@ -22,7 +22,7 @@ body {
 }
 
 #todo,
-#inProgress,
+#in_progress,
 #done {
   width: 600px;
   min-height: 400px;
