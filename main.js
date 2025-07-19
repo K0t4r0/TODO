@@ -49,27 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  const saved = localStorage.getItem(TODOS_STORAGE_KEY);
-  if (saved) {
-    const todos = JSON.parse(saved);
-    todos.forEach(todo => addToDo(todo));
-  } else {
-    fetch(API_URL)
-      .then(response => {
-        if (!response.ok) throw new Error("Could not fetch resource");
-        return response.json();
-      })
-      .then(data => {
-        const todos = data.todos.map(todo => ({ id: todo.id, text: todo.todo, status: TODO_STATUSES.TODO }));
-
-        localStorage.setItem(TODOS_STORAGE_KEY, JSON.stringify(todos));
-        todos.forEach(todo => addToDo(todo));
-      })
-      .catch(error => console.error(error));
-  }
-
-  // Make columns droppable
-  Object.values(TODO_STATUSES).forEach(id => {
+  const makeColumnDroppable = (id) => {
     const col = document.getElementById(id);
     if (col) {
       col.addEventListener("dragover", (e) => {
@@ -101,5 +81,28 @@ document.addEventListener('DOMContentLoaded', () => {
         if (dragging) dragging.remove();
       });
     }
+  }
+
+  const saved = localStorage.getItem(TODOS_STORAGE_KEY);
+  if (saved) {
+    const todos = JSON.parse(saved);
+    todos.forEach(todo => addToDo(todo));
+  } else {
+    fetch(API_URL)
+      .then(response => {
+        if (!response.ok) throw new Error("Could not fetch resource");
+        return response.json();
+      })
+      .then(data => {
+        const todos = data.todos.map(todo => ({ id: todo.id, text: todo.todo, status: TODO_STATUSES.TODO }));
+
+        localStorage.setItem(TODOS_STORAGE_KEY, JSON.stringify(todos));
+        todos.forEach(todo => addToDo(todo));
+      })
+      .catch(error => console.error(error));
+  }
+
+  Object.values(TODO_STATUSES).forEach(id => {
+    makeColumnDroppable(id);
   });
 });
