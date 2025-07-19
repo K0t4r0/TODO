@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!list) return;
 
 const saved = localStorage.getItem("todos");
+let draggedId = null; 
 
 if (saved) {
   const todos = JSON.parse(saved);
@@ -15,14 +16,12 @@ if (saved) {
     })
     .then(data => {
       const todos = data.todos.map(todo => ({ id: todo.id, text: todo.todo, status: 'todo' }));
-      
+
       localStorage.setItem("todos", JSON.stringify(todos));
       todos.forEach(todo => addToDo(todo));
     })
     .catch(error => console.error(error));
 }
-
-
 
 function addToDo(data, columnId = "todo") {
   const newItem = document.createElement("p");
@@ -34,6 +33,7 @@ function addToDo(data, columnId = "todo") {
     e.dataTransfer.setData("text/plain", newItem.textContent);
     e.dataTransfer.effectAllowed = "move";
     newItem.classList.add("dragging");
+    draggedId = data.id;
   });
   newItem.addEventListener("dragend", () => {
     newItem.classList.remove("dragging");
@@ -44,6 +44,24 @@ function addToDo(data, columnId = "todo") {
   if (column) column.appendChild(newItem);
 }
 
+const updateTodoStatus = (id, status) => {
+  const savedTodos = localStorage.getItem("todos");
+
+  if (savedTodos) {
+    const todos = JSON.parse(savedTodos);
+    const updatedTodos = todos.map(todo => {
+      if (todo.id === id) {
+        return { ...todo, status: status }
+      } else {
+        return todo;
+      }
+    });
+
+    console.log(updatedTodos);
+
+    localStorage.setItem('todos', JSON.stringify(updatedTodos));
+  }
+}
 
 // Make columns droppable
 ["todo", "inProgress", "done"].forEach(id => {
@@ -62,13 +80,16 @@ function addToDo(data, columnId = "todo") {
       // Remove all possible classes
       newItem.classList.remove("to_do", "in_progress", "do_ne");
 
-      // Add the correct class based on the column
+      console.log(draggedId);
       if (id === "todo") {
         newItem.classList.add("to_do");
+        updateTodoStatus(draggedId, 'todo');
       } else if (id === "inProgress") {
-        newItem.classList.add("in_process");
+        newItem.classList.add("in_progress");
+        updateTodoStatus(draggedId, 'in_progress');
       } else if (id === "done") {
         newItem.classList.add("do_ne");
+        updateTodoStatus(draggedId, 'done');
       }
 
       // Add drag events again
