@@ -14,8 +14,10 @@ if (saved) {
       return response.json();
     })
     .then(data => {
-      localStorage.setItem("todos", JSON.stringify(data.todos));
-      data.todos.forEach(todo => addToDo(todo));
+      const todos = data.todos.map(todo => ({ id: todo.id, text: todo.todo, status: 'todo' }));
+      
+      localStorage.setItem("todos", JSON.stringify(todos));
+      todos.forEach(todo => addToDo(todo));
     })
     .catch(error => console.error(error));
 }
@@ -24,7 +26,7 @@ if (saved) {
 
 function addToDo(data, columnId = "todo") {
   const newItem = document.createElement("p");
-  newItem.textContent = data.todo;
+  newItem.textContent = data.text;
   newItem.draggable = true;
 
   // Drag events
@@ -63,7 +65,7 @@ function addToDo(data, columnId = "todo") {
       // Add the correct class based on the column
       if (id === "todo") {
         newItem.classList.add("to_do");
-      } else if (id === "inProcess") {
+      } else if (id === "inProgress") {
         newItem.classList.add("in_process");
       } else if (id === "done") {
         newItem.classList.add("do_ne");
